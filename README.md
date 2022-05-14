@@ -73,6 +73,85 @@ mkdir -p /raid/part{1,2,3,4,5}
 for i in $(seq 1 5); do mount /dev/md0p$i /raid/part$i; done
 ```
 
+Имитация поломки диска пометкой одного диска как сбойного
+
+```
+[vagrant@otuslinux ~]$ sudo mdadm -D /dev/md0
+/dev/md0:
+           Version : 1.2
+     Creation Time : Sat May 14 15:19:43 2022
+        Raid Level : raid5
+        Array Size : 301056 (294.00 MiB 308.28 MB)
+     Used Dev Size : 100352 (98.00 MiB 102.76 MB)
+      Raid Devices : 4
+     Total Devices : 6
+       Persistence : Superblock is persistent
+
+       Update Time : Sat May 14 15:21:27 2022
+             State : clean
+    Active Devices : 4
+   Working Devices : 6
+    Failed Devices : 0
+     Spare Devices : 2
+
+            Layout : left-symmetric
+        Chunk Size : 512K
+
+Consistency Policy : resync
+
+              Name : otuslinux:0  (local to host otuslinux)
+              UUID : 761768fc:7f6ff61d:6d353f24:14e1c4a5
+            Events : 26
+
+    Number   Major   Minor   RaidDevice State
+       0       8       16        0      active sync   /dev/sdb
+       1       8       32        1      active sync   /dev/sdc
+       2       8       48        2      active sync   /dev/sdd
+       4       8       64        3      active sync   /dev/sde
+
+       5       8       80        -      spare   /dev/sdf
+       6       8       96        -      spare   /dev/sdg
+```
+
+После выполнения `mdadm /dev/md0 --fail /dev/sdb` один из spare-дисков задействован вместо сбойного
+```
+[vagrant@otuslinux ~]$ sudo mdadm -D /dev/md0
+/dev/md0:
+           Version : 1.2
+     Creation Time : Sat May 14 15:19:43 2022
+        Raid Level : raid5
+        Array Size : 301056 (294.00 MiB 308.28 MB)
+     Used Dev Size : 100352 (98.00 MiB 102.76 MB)
+      Raid Devices : 4
+     Total Devices : 6
+       Persistence : Superblock is persistent
+
+       Update Time : Sat May 14 16:13:20 2022
+             State : clean
+    Active Devices : 4
+   Working Devices : 5
+    Failed Devices : 1
+     Spare Devices : 1
+
+            Layout : left-symmetric
+        Chunk Size : 512K
+
+Consistency Policy : resync
+
+              Name : otuslinux:0  (local to host otuslinux)
+              UUID : 761768fc:7f6ff61d:6d353f24:14e1c4a5
+            Events : 45
+
+    Number   Major   Minor   RaidDevice State
+       6       8       96        0      active sync   /dev/sdg
+       1       8       32        1      active sync   /dev/sdc
+       2       8       48        2      active sync   /dev/sdd
+       4       8       64        3      active sync   /dev/sde
+
+       0       8       16        -      faulty   /dev/sdb
+       5       8       80        -      spare   /dev/sdf
+```
+
 Vagrantfile содержит inline-script, выполняющий при провижининге 
 - создание массива
 - запись конфигурационного файла
