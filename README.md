@@ -87,7 +87,6 @@ Vagrantfile содержит inline-script, выполняющий при провижининге
 # **Результаты**
 
 Полученные в ходе работы vagrant box и конфигурационные файлы помещены в публичные репозитории:
-- **GitHub** - https://github.com/jimidini77/manual_kernel_update/
-- **Vagrant Cloud** - https://app.vagrantup.com/jimidini77/boxes/centos-7-5
+- **GitHub** - https://github.com/jimidini77/otus-linux-day02
 
 
