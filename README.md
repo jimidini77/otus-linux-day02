@@ -1,4 +1,4 @@
-# manual_kernel_update
+# otus-linux-day02
 Работа с `mdadm`
 
 # **Содержание ДЗ**
